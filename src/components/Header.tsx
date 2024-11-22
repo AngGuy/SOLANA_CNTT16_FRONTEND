@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Layout, Menu, Dropdown } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { UserOutlined, LogoutOutlined, HomeOutlined } from "@ant-design/icons";
@@ -45,6 +45,9 @@ const Header = () => {
       <Menu theme="dark" mode="horizontal">
         <Menu.Item key="home" icon={<HomeOutlined />}>
           <Link to="/">Home</Link>
+        </Menu.Item>
+        <Menu.Item key="connect">
+          <Link to="/connect">Connect Phantom</Link>
         </Menu.Item>
         <Menu.Item key="assets">
           <Link to="/assets">All NFTs</Link>

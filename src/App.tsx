@@ -13,9 +13,10 @@ import AssetsPage from "./pages/AssetsPage";
 import CreateNFTPage from "./pages/CreateNFTPage";
 import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
+import WalletConnect from "./components/WalletConnect";
 
 const App: React.FC = () => {
-  const isAuthenticated = !!localStorage.getItem("userToken"); // Kiểm tra trạng thái đăng nhập
+  const isAuthenticated = !!localStorage.getItem("walletAddress"); // Kiểm tra trạng thái đăng nhập
 
   return (
     <Router>
@@ -30,7 +31,7 @@ const App: React.FC = () => {
           <Routes>
             {/* Trang chủ không cần xác thực */}
             <Route path="/" element={<HomePage />} />
-
+            <Route path="/connect" element={<WalletConnect />} />
             {/* Các trang yêu cầu đăng nhập */}
             <Route
               path="/assets"
