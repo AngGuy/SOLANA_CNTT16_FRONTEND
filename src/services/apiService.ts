@@ -46,15 +46,6 @@ const fetchAPI = async (url: string, options: RequestInit) => {
   return response.json();
 };
 
-// API: Đăng ký người dùng
-export const registerUser = async (userData: {
-  referenceId: string;
-  email: string;
-  externalWalletAddress: string;
-}) => {
-  return axiosAPI("/register", "POST", userData);
-};
-
 // API: Đưa NFT lên sàn
 
 export const listAssetForSale = async (data: {
@@ -84,9 +75,6 @@ export const listAssetForSale = async (data: {
 };
 
 // API: Mua NFT
-export const buyNFT = async (purchaseData: any) => {
-  return axiosAPI("/buy-nft", "POST", purchaseData);
-};
 
 // API: Lấy tất cả NFTs
 export const getAllNFTs = async () => {
@@ -140,6 +128,34 @@ export const fetchAssets = async () => {
     throw error;
   }
 };
+export const buyNFT = async (data: { IdNFT: string; buyerId: string }) => {
+  const url = `http://localhost:5000/api/nfts/buy-nft`;
+  const payload = {
+    IdNFT: data.IdNFT,
+    buyerId: data.buyerId,
+  };
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to create NFT.");
+    }
+
+    const responseData = await response.json();
+    console.log("NFT created successfully:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("Error creating NFT:", error);
+    throw error;
+  }
+};
 
 export const createNFT = async (data: {
   attributes: { traitType: string; value: string }[];
@@ -159,6 +175,42 @@ export const createNFT = async (data: {
     name: data.name,
     destinationUserReferenceId: data.destinationUserReferenceId,
   };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to create NFT.");
+    }
+
+    const responseData = await response.json();
+    console.log("NFT created successfully:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("Error creating NFT:", error);
+    throw error;
+  }
+};
+export const registerUser = async (userData: {
+  email: string;
+  referenceId: string;
+  externalWalletAddress: string;
+}) => {
+  const url = `http://localhost:5000/api/users/register`;
+  const payload = {
+    email: userData.email,
+    referenceId: userData.referenceId,
+    externalWalletAddress: userData.externalWalletAddress,
+  };
+
+  const body = JSON.stringify(userData);
 
   try {
     const response = await fetch(url, {

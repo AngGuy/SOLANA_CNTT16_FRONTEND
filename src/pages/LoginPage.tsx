@@ -1,47 +1,63 @@
-import React, { useState } from "react";
-import { Form, Input, Button, notification } from "antd";
-import { loginUser } from "../services/apiService";
+import React, { useState, useEffect } from "react";
+import { Input, Button, Form, message } from "antd";
+import { registerUser } from "../services/apiService"; // Ensure this path is correct
 
-const LoginPage: React.FC = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+const LoginPage = () => {
+  const [email, setEmail] = useState<string>("");
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
-  const onFinish = async (values: any) => {
-    setLoading(true);
+  // Handle form submission
+  const handleRegister = async (values: { email: string }) => {
     try {
-      const response = await loginUser(values); // Gọi API đăng nhập
-      localStorage.setItem("userToken", response.token); // Lưu token
-      notification.success({
-        message: "Login Successful",
-        description: "Welcome back!",
-      });
-      window.location.href = "/"; // Chuyển hướng về trang chủ
-    } catch (error) {
-      console.error("Login error:", error);
-      notification.error({
-        message: "Error",
-        description: "Failed to log in. Please check your credentials.",
-      });
-    } finally {
-      setLoading(false);
+      console.log("Form values on submit:", values);
+
+      // Chắc chắn walletAddress đã được set
+      if (!walletAddress) {
+        message.error("Please connect your wallet first.");
+        return;
+      }
+      const details = {
+        email: values.email,
+        externalWalletAddress: walletAddress,
+        referenceId: walletAddress, // Use walletAddress for referenceId
+      };
+
+      // Call the API to register the user
+      const data = await registerUser(details);
+      console.log("User registered successfully:", data);
+      message.success("User registered successfully!");
+    } catch (error: any) {
+      console.error("Error registering user:", error.message);
+      message.error(error.message || "An error occurred while registering.");
     }
   };
 
+  useEffect(() => {
+    const savedWalletAddress = localStorage.getItem("walletAddress");
+    if (savedWalletAddress) {
+      setWalletAddress(savedWalletAddress);
+    }
+  }, []);
+
   return (
-    <div>
-      <h1>Login</h1>
-      <Form layout="vertical" onFinish={onFinish}>
-        <Form.Item
-          name="email"
-          label="Email"
-          rules={[{ required: true, message: "Please enter your email." }]}
-        >
-          <Input placeholder="Enter your email" />
-        </Form.Item>
-        <Button type="primary" htmlType="submit" loading={loading}>
-          Login
-        </Button>
-      </Form>
-    </div>
+    <Form onFinish={handleRegister} layout="vertical">
+      <h2>Register User</h2>
+
+      {/* Email input */}
+      <Form.Item label="Email" name="email" required>
+        <Input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter Email"
+        />
+      </Form.Item>
+
+      {/* Register button */}
+      <Button type="primary" htmlType="submit" disabled={!walletAddress}>
+        Register
+      </Button>
+    </Form>
   );
 };
 
