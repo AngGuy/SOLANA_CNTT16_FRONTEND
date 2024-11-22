@@ -29,7 +29,8 @@ const CreateNFTPage = () => {
       ];
 
       // Chuẩn bị payload gửi đến API
-      const payload = {
+      const details = {
+        collectionId: "c1fccce9-d359-42c0-8f40-3ee2a54b83cc",
         name: values.name,
         description: values.description,
         imageUrl: values.imageUrl,
@@ -38,7 +39,7 @@ const CreateNFTPage = () => {
       };
 
       // Gửi dữ liệu đến API
-      const response = await createNFT(payload);
+      const response = await createNFT(details);
       message.success("NFT created successfully!");
       console.log("Created NFT:", response);
     } catch (error: any) {

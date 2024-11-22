@@ -95,17 +95,20 @@ export const fetchAssets = async () => {
 
 export const createNFT = async (data: {
   attributes: { traitType: string; value: string }[];
+  collectionId: string;
   description: string;
   imageUrl: string;
   name: string;
   destinationUserReferenceId: string;
 }) => {
   const url = `http://localhost:5000/api/nfts/create-nft`;
+  const collectionId = "c1fccce9-d359-42c0-8f40-3ee2a54b83cc";
 
   // Định dạng payload gửi đến backend
   const body = JSON.stringify({
     details: {
       attributes: data.attributes,
+      collectionId: collectionId,
       description: data.description,
       imageUrl: data.imageUrl,
       name: data.name,
