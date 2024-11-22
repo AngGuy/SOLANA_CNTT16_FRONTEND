@@ -56,11 +56,6 @@ export const registerUser = async (userData: {
   return axiosAPI("/register", "POST", userData);
 };
 
-// API: Tạo NFT
-export const createUniqueAsset = async (assetData: any) => {
-  return axiosAPI("/create-unique-asset", "POST", assetData);
-};
-
 // API: Đưa NFT lên sàn
 export const listAssetForSale = async (saleData: any) => {
   return axiosAPI("/list-asset-for-sale", "POST", saleData);
@@ -99,23 +94,27 @@ export const fetchAssets = async () => {
   return fetchAPI(url, { method: "GET" });
 };
 
-// Tạo NFT mới
 export const createNFT = async (data: {
   name: string;
   description: string;
   imageUrl: string;
   destinationUserReferenceId: string;
+  attributes: { traitType: string; value: string }[];
 }) => {
-  const url = `${API_BASE_URL}/nx/unique-assets`;
+  const url = `${API_BASE_URL}/nfts/create-nft`;
+
+  // Định dạng payload gửi đến backend
   const body = JSON.stringify({
     details: {
       name: data.name,
       description: data.description,
       imageUrl: data.imageUrl,
+      attributes: data.attributes,
     },
     destinationUserReferenceId: data.destinationUserReferenceId,
   });
 
+  // Gửi yêu cầu đến API
   return fetchAPI(url, { method: "POST", body });
 };
 
