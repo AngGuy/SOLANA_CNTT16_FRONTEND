@@ -1,8 +1,7 @@
 import axios from "axios";
 
 // Sử dụng biến môi trường để xác định URL cơ sở của API
-const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api"; // Địa chỉ API của bạn
+const API_BASE_URL = "http://localhost:5000/api"; // Địa chỉ API của bạn
 const API_KEY = process.env.REACT_APP_API_KEY; // Đảm bảo bạn đã khai báo trong file .env
 
 // Hàm dùng Axios để gọi API
@@ -90,28 +89,28 @@ export const fetchNFTs = async ({
 
 // Fetch danh sách Assets
 export const fetchAssets = async () => {
-  const url = `${API_BASE_URL}/nx/items`;
+  const url = `${API_BASE_URL}/nfts/get-all-nft`;
   return fetchAPI(url, { method: "GET" });
 };
 
 export const createNFT = async (data: {
-  name: string;
+  attributes: { traitType: string; value: string }[];
   description: string;
   imageUrl: string;
+  name: string;
   destinationUserReferenceId: string;
-  attributes: { traitType: string; value: string }[];
 }) => {
-  const url = `${API_BASE_URL}/nfts/create-nft`;
+  const url = `http://localhost:5000/api/nfts/create-nft`;
 
   // Định dạng payload gửi đến backend
   const body = JSON.stringify({
     details: {
-      name: data.name,
+      attributes: data.attributes,
       description: data.description,
       imageUrl: data.imageUrl,
-      attributes: data.attributes,
+      name: data.name,
+      destinationUserReferenceId: data.destinationUserReferenceId,
     },
-    destinationUserReferenceId: data.destinationUserReferenceId,
   });
 
   // Gửi yêu cầu đến API
