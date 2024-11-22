@@ -34,12 +34,17 @@ const CreateNFTPage = () => {
         name: values.name,
         description: values.description,
         imageUrl: values.imageUrl,
-        destinationUserReferenceId: walletAddress, // Gán walletAddress vào destinationUserReferenceId
         attributes, // Gửi attributes đã nhập
       };
+      const userReferenceData = {
+        destinationUserReferenceId: walletAddress, // Gán walletAddress vào destinationUserReferenceId
+      };
+
+      // Gửi cả details và userReferenceData (destinationUserReferenceId)
+      const payload = { ...details, ...userReferenceData };
 
       // Gửi dữ liệu đến API
-      const response = await createNFT(details);
+      const response = await createNFT(payload);
       message.success("NFT created successfully!");
       console.log("Created NFT:", response);
     } catch (error: any) {

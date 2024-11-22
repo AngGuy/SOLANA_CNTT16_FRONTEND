@@ -30,16 +30,20 @@ const CreateNFTPage = () => {
 
       // Chuẩn bị payload gửi đến API
       const details = {
-        collectionId: "c1fccce9-d359-42c0-8f40-3ee2a54b83cc",
         name: values.name,
         description: values.description,
         imageUrl: values.imageUrl,
-        destinationUserReferenceId: walletAddress, // Gán walletAddress vào destinationUserReferenceId
         attributes, // Gửi attributes đã nhập
       };
+      const userReferenceData = {
+        destinationUserReferenceId: walletAddress, // Gán walletAddress vào destinationUserReferenceId
+      };
+
+      // Gửi cả details và userReferenceData (destinationUserReferenceId)
+      const payload = { ...details, ...userReferenceData };
 
       // Gửi dữ liệu đến API
-      const response = await createNFT(details);
+      const response = await createNFT(payload);
       message.success("NFT created successfully!");
       console.log("Created NFT:", response);
     } catch (error: any) {
