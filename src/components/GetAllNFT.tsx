@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-
 import { Card, List, message, Spin } from "antd";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { getAllNFTs } from "../services/apiService";
 
 interface NFTItem {
@@ -13,6 +13,7 @@ interface NFTItem {
 const GetAllNFTs: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [nfts, setNfts] = useState<NFTItem[]>([]);
+  const navigate = useNavigate(); // Sử dụng useNavigate
 
   useEffect(() => {
     const fetchNFTs = async () => {
@@ -29,6 +30,11 @@ const GetAllNFTs: React.FC = () => {
     fetchNFTs();
   }, []);
 
+  const handleNFTClick = (nft: NFTItem) => {
+    // Điều hướng đến trang chi tiết NFT
+    navigate("/nft-detail", { state: nft }); // Truyền thông tin NFT qua state
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <h1>NFT Collection</h1>
@@ -39,7 +45,10 @@ const GetAllNFTs: React.FC = () => {
           grid={{ gutter: 16, column: 4 }}
           dataSource={nfts}
           renderItem={(item) => (
-            <List.Item>
+            <List.Item
+              onClick={() => handleNFTClick(item)}
+              style={{ cursor: "pointer" }}
+            >
               <Card
                 title={item.name}
                 cover={
@@ -47,10 +56,10 @@ const GetAllNFTs: React.FC = () => {
                     alt={item.name}
                     src={item.imageUrl}
                     style={{
-                      width: "100%", // Để ảnh khớp với chiều rộng của thẻ Card
-                      height: "200px", // Đặt chiều cao tối đa
-                      objectFit: "cover", // Giữ nguyên tỷ lệ và cắt ảnh nếu cần
-                      borderRadius: "10px", // Làm tròn góc nếu muốn
+                      width: "100%",
+                      height: "200px",
+                      objectFit: "cover",
+                      borderRadius: "10px",
                     }}
                   />
                 }
