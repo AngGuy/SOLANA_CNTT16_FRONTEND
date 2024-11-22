@@ -89,31 +89,42 @@ export const fetchNFTs = async ({
 
 // Fetch danh sách Assets
 export const fetchAssets = async () => {
-  const url = `${API_BASE_URL}/nfts/get-all-nft`;
-  return fetchAPI(url, { method: "GET" });
+  const url = `http://localhost:5000/api/nfts/get-all-nft`;
+
+  try {
+    const response = await fetch(url, { method: "GET" });
+
+    if (!response.ok) {
+      // Kiểm tra nếu có lỗi trong phản hồi (status không phải 2xx)
+      throw new Error(`Error fetching assets: ${response.statusText}`);
+    }
+
+    const data = await response.json(); // Chuyển đổi dữ liệu JSON
+    return data; // Trả về dữ liệu JSON từ API
+  } catch (error) {
+    console.error("Error fetching assets:", error);
+    throw error; // Ném lỗi nếu có sự cố
+  }
 };
 
 export const createNFT = async (data: {
   attributes: { traitType: string; value: string }[];
-  collectionId: string;
   description: string;
   imageUrl: string;
   name: string;
   destinationUserReferenceId: string;
 }) => {
   const url = `http://localhost:5000/api/nfts/create-nft`;
-  const collectionId = "c1fccce9-d359-42c0-8f40-3ee2a54b83cc";
 
   // Định dạng payload gửi đến backend
   const body = JSON.stringify({
     details: {
       attributes: data.attributes,
-      collectionId: collectionId,
       description: data.description,
       imageUrl: data.imageUrl,
       name: data.name,
-      destinationUserReferenceId: data.destinationUserReferenceId,
     },
+    destinationUserReferenceId: data.destinationUserReferenceId, // Gửi destinationUserReferenceId ngoài details
   });
 
   // Gửi yêu cầu đến API

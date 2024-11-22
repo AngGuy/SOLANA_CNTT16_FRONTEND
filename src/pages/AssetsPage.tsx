@@ -10,7 +10,7 @@ const AssetsPage: React.FC = () => {
     const loadAssets = async () => {
       try {
         const data = await fetchAssets(); // Hàm API để lấy danh sách NFT
-        setAssets(data || []);
+        setAssets(data?.item ? [data.item] : []); // Chắc chắn có dữ liệu "item"
       } catch (error) {
         console.error("Error fetching assets:", error);
       } finally {
@@ -27,14 +27,14 @@ const AssetsPage: React.FC = () => {
       <List
         grid={{ gutter: 16, column: 4 }}
         loading={loading}
-        dataSource={assets}
+        dataSource={assets} // Sử dụng assets đã cập nhật
         renderItem={(item) => (
           <List.Item>
             <Card
-              title={item.name}
-              cover={<img alt={item.name} src={item.imageUrl} />}
+              title={item?.name} // Lấy tên NFT
+              cover={<img alt={item?.name} src={item?.imageUrl} />} // Lấy ảnh đại diện
             >
-              <p>{item.description}</p>
+              <p>{item?.description}</p> // Lấy mô tả
             </Card>
           </List.Item>
         )}
