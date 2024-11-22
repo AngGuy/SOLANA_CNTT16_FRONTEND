@@ -14,6 +14,7 @@ import CreateNFTPage from "./pages/CreateNFTPage";
 import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import WalletConnect from "./components/WalletConnect";
+import ListNFTForSale from "./components/ListNFTForSale";
 
 const App: React.FC = () => {
   const isAuthenticated = !!localStorage.getItem("walletAddress"); // Kiểm tra trạng thái đăng nhập
@@ -45,6 +46,7 @@ const App: React.FC = () => {
                 isAuthenticated ? <CreateNFTPage /> : <Navigate to="/login" />
               }
             />
+            <Route path="/list-nft-for-sale" element={<ListNFTForSale />} />
             <Route
               path="/profile"
               element={
