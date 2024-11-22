@@ -60,37 +60,27 @@ export const registerUser = async (userData: {
 export const listAssetForSale = async (data: {
   IdNFT: string;
   currencyId: string;
-  naturalAmount: number; // Optional, sẽ dùng mặc định từ backend nếu không truyền
+  naturalAmount: number;
 }) => {
   const url = `http://localhost:5000/api/nfts/list-for-sale`;
 
-  const payload = {
-    IdNFT: data.IdNFT,
-    currencyId: data.currencyId,
-    naturalAmount: data.naturalAmount,
-  };
+  const body = JSON.stringify(data);
 
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body,
+  });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to create NFT.");
-    }
-
-    const responseData = await response.json();
-    console.log("NFT created successfully:", responseData);
-    return responseData;
-  } catch (error) {
-    console.error("Error creating NFT:", error);
-    throw error;
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Backend error:", errorData);
+    throw new Error(errorData.error || "Failed to list asset for sale.");
   }
+
+  return await response.json();
 };
 
 // API: Mua NFT

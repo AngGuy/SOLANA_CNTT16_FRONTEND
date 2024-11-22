@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, message } from "antd";
 import { listAssetForSale } from "../services/apiService";
-
+import { Navigate, useNavigate } from "react-router-dom";
 const ListNFTForSale: React.FC = () => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Lấy NFT ID từ localStorage và set giá trị vào form
@@ -19,22 +20,29 @@ const ListNFTForSale: React.FC = () => {
     naturalAmount: number;
   }) => {
     try {
+      console.log("Submitting values:", values);
       const response = await listAssetForSale(values);
+
+      console.log("API Response:", response);
 
       if (response.consentUrl) {
         message.success("NFT listed for sale successfully!");
         console.log("Consent URL:", response.consentUrl);
 
-        // Điều hướng đến consentUrl
-        window.location.href = response.consentUrl;
+        // Mở tab mới
+        window.open(response.consentUrl, "_blank");
+
+        setTimeout(() => {
+          navigate("/"); // Navigate to the home page
+        }, 3000);
       } else {
         message.error("Consent URL not found in response.");
       }
     } catch (error: any) {
+      console.error("Error during listing:", error);
       message.error(
         error.response?.data?.error || "Error listing NFT for sale."
       );
-      console.error("Error:", error);
     }
   };
 
