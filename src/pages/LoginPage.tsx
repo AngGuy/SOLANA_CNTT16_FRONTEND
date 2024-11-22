@@ -37,13 +37,6 @@ const LoginPage: React.FC = () => {
         >
           <Input placeholder="Enter your email" />
         </Form.Item>
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[{ required: true, message: "Please enter your password." }]}
-        >
-          <Input.Password placeholder="Enter your password" />
-        </Form.Item>
         <Button type="primary" htmlType="submit" loading={loading}>
           Login
         </Button>
