@@ -3,18 +3,19 @@ import { List, Card } from "antd";
 import { fetchAssets } from "../services/apiService";
 
 const AssetsPage: React.FC = () => {
-  const [assets, setAssets] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [assets, setAssets] = useState<any[]>([]); // Lưu danh sách NFT
+  const [loading, setLoading] = useState<boolean>(true); // Trạng thái loading
 
+  // Gọi API khi component được render
   useEffect(() => {
     const loadAssets = async () => {
       try {
-        const data = await fetchAssets(); // Hàm API để lấy danh sách NFT
-        setAssets(data?.item ? [data.item] : []); // Chắc chắn có dữ liệu "item"
+        const data = await fetchAssets(); // Gọi API
+        setAssets(data?.items || []); // Sử dụng key "items" từ API
       } catch (error) {
         console.error("Error fetching assets:", error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Tắt trạng thái loading
       }
     };
 
@@ -27,18 +28,20 @@ const AssetsPage: React.FC = () => {
       <List
         grid={{ gutter: 16, column: 4 }}
         loading={loading}
-        dataSource={assets} // Sử dụng assets đã cập nhật
+        dataSource={assets} // Gắn danh sách NFT
         renderItem={(item) => (
           <List.Item>
             <Card
-              title={item?.name} // Lấy tên NFT
-              cover={<img alt={item?.name} src={item?.imageUrl} />} // Lấy ảnh đại diện
+              title={item?.name} // Tên NFT
+              cover={<img alt={item?.name} src={item?.imageUrl} />} // Ảnh đại diện
             >
-              <p>{item?.description}</p> // Lấy mô tả
+              <p>{item?.description}</p> {/* Mô tả */}
             </Card>
           </List.Item>
         )}
       />
+      {!loading && assets.length === 0 && <p>No assets found.</p>}{" "}
+      {/* Hiển thị nếu không có NFT */}
     </div>
   );
 };

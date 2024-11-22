@@ -56,8 +56,41 @@ export const registerUser = async (userData: {
 };
 
 // API: Đưa NFT lên sàn
-export const listAssetForSale = async (saleData: any) => {
-  return axiosAPI("/list-asset-for-sale", "POST", saleData);
+
+export const listAssetForSale = async (data: {
+  IdNFT: string;
+  currencyId: string;
+  naturalAmount: number; // Optional, sẽ dùng mặc định từ backend nếu không truyền
+}) => {
+  const url = `http://localhost:5000/api/nfts/list-for-sale`;
+
+  const payload = {
+    IdNFT: data.IdNFT,
+    currencyId: data.currencyId,
+    naturalAmount: data.naturalAmount,
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to create NFT.");
+    }
+
+    const responseData = await response.json();
+    console.log("NFT created successfully:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("Error creating NFT:", error);
+    throw error;
+  }
 };
 
 // API: Mua NFT
@@ -89,26 +122,20 @@ export const fetchNFTs = async ({
 
 // Fetch danh sách Assets
 export const fetchAssets = async () => {
-  const url = `http://localhost:5000/api/nfts/get-all-nft`;
-
   try {
-    const response = await fetch(url, { method: "GET" });
-
-    if (!response.ok) {
-      // Kiểm tra nếu có lỗi trong phản hồi (status không phải 2xx)
-      throw new Error(`Error fetching assets: ${response.statusText}`);
-    }
-
-    const data = await response.json(); // Chuyển đổi dữ liệu JSON
-    return data; // Trả về dữ liệu JSON từ API
+    const response = await axios.get(
+      "http://localhost:5000/api/nfts/get-all-nft"
+    );
+    return response.data; // Trả về dữ liệu từ API
   } catch (error) {
     console.error("Error fetching assets:", error);
-    throw error; // Ném lỗi nếu có sự cố
+    throw error;
   }
 };
 
 export const createNFT = async (data: {
   attributes: { traitType: string; value: string }[];
+  collectionId?: string; // Optional, sẽ dùng mặc định từ backend nếu không truyền
   description: string;
   imageUrl: string;
   name: string;
@@ -116,19 +143,36 @@ export const createNFT = async (data: {
 }) => {
   const url = `http://localhost:5000/api/nfts/create-nft`;
 
-  // Định dạng payload gửi đến backend
-  const body = JSON.stringify({
-    details: {
-      attributes: data.attributes,
-      description: data.description,
-      imageUrl: data.imageUrl,
-      name: data.name,
-    },
-    destinationUserReferenceId: data.destinationUserReferenceId, // Gửi destinationUserReferenceId ngoài details
-  });
+  const payload = {
+    attributes: data.attributes,
+    collectionId: data.collectionId, // Optional, nếu undefined thì backend sẽ sử dụng giá trị mặc định
+    description: data.description,
+    imageUrl: data.imageUrl,
+    name: data.name,
+    destinationUserReferenceId: data.destinationUserReferenceId,
+  };
 
-  // Gửi yêu cầu đến API
-  return fetchAPI(url, { method: "POST", body });
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to create NFT.");
+    }
+
+    const responseData = await response.json();
+    console.log("NFT created successfully:", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("Error creating NFT:", error);
+    throw error;
+  }
 };
 
 // Lấy thông tin người dùng

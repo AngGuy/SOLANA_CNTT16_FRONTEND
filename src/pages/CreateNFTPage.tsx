@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, message } from "antd";
+import { useNavigate } from "react-router-dom";
 import { createNFT } from "../services/apiService";
 
-const CreateNFTPage = () => {
+const CreateNFTPage: React.FC = () => {
   const [form] = Form.useForm();
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  // Gửi dữ liệu khi form được submit
   const handleSubmit = async (values: {
     name: string;
     description: string;
@@ -15,44 +16,38 @@ const CreateNFTPage = () => {
     password: string;
   }) => {
     try {
-      console.log("Form values on submit:", values);
-
-      // Chắc chắn walletAddress đã được set
       if (!walletAddress) {
         message.error("Please connect your wallet first.");
         return;
       }
 
-      const attributes = [
-        { traitType: "Username", value: values.username },
-        { traitType: "Password", value: values.password },
-      ];
-
-      // Chuẩn bị payload gửi đến API
-      const details = {
+      const payload = {
         name: values.name,
         description: values.description,
         imageUrl: values.imageUrl,
-        attributes, // Gửi attributes đã nhập
-      };
-      const userReferenceData = {
-        destinationUserReferenceId: walletAddress, // Gán walletAddress vào destinationUserReferenceId
+        attributes: [
+          { traitType: "Username", value: values.username },
+          { traitType: "Password", value: values.password },
+        ],
+        destinationUserReferenceId: walletAddress,
       };
 
-      // Gửi cả details và userReferenceData (destinationUserReferenceId)
-      const payload = { ...details, ...userReferenceData };
-
-      // Gửi dữ liệu đến API
       const response = await createNFT(payload);
       message.success("NFT created successfully!");
       console.log("Created NFT:", response);
+
+      // Lấy ID từ response và lưu vào localStorage
+      const nftId = response.id;
+      localStorage.setItem("createdNFTId", nftId);
+
+      // Chuyển hướng đến trang ListNFTForSale
+      navigate("/list-nft-for-sale");
     } catch (error: any) {
       message.error(error.response?.data?.error || "Error creating NFT.");
       console.error("Error:", error);
     }
   };
 
-  // Kiểm tra ví Phantom khi component mount
   useEffect(() => {
     const savedWalletAddress = localStorage.getItem("walletAddress");
     if (savedWalletAddress) {
@@ -63,14 +58,9 @@ const CreateNFTPage = () => {
   return (
     <div style={{ maxWidth: 500, margin: "0 auto", padding: 20 }}>
       <h2>Create a New NFT</h2>
-
-      {/* Debugging: Check if wallet address is set */}
       <div style={{ marginBottom: "20px", fontSize: "16px" }}>
-        <strong>Wallet Address:</strong>{" "}
-        {walletAddress ? walletAddress : "Not connected"}
+        <strong>Wallet Address:</strong> {walletAddress || "Not connected"}
       </div>
-
-      {/* Start of Form */}
       <Form
         form={form}
         onFinish={handleSubmit}
@@ -82,7 +72,7 @@ const CreateNFTPage = () => {
           border: "1px solid #ddd",
         }}
       >
-        {/* Username Field */}
+        {/* Các trường form */}
         <Form.Item
           name="username"
           label="Username"
@@ -90,8 +80,6 @@ const CreateNFTPage = () => {
         >
           <Input placeholder="Enter your username" />
         </Form.Item>
-
-        {/* Password Field */}
         <Form.Item
           name="password"
           label="Password"
@@ -99,8 +87,6 @@ const CreateNFTPage = () => {
         >
           <Input.Password placeholder="Enter your password" />
         </Form.Item>
-
-        {/* NFT Name Field */}
         <Form.Item
           name="name"
           label="NFT Name"
@@ -108,8 +94,6 @@ const CreateNFTPage = () => {
         >
           <Input placeholder="Enter NFT name" />
         </Form.Item>
-
-        {/* Description Field */}
         <Form.Item
           name="description"
           label="Description"
@@ -117,8 +101,6 @@ const CreateNFTPage = () => {
         >
           <Input.TextArea placeholder="Enter description" rows={4} />
         </Form.Item>
-
-        {/* Image URL Field */}
         <Form.Item
           name="imageUrl"
           label="Image URL"
@@ -129,25 +111,14 @@ const CreateNFTPage = () => {
         >
           <Input placeholder="Enter image URL" />
         </Form.Item>
-
-        {/* User Reference ID */}
-        <Form.Item name="destinationUserReferenceId" label="User Reference ID">
-          <Input value={walletAddress || ""} disabled />{" "}
-          {/* Show wallet address */}
-        </Form.Item>
-
-        {/* Submit Button */}
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ width: "100%", backgroundColor: "#1890ff" }}
-          >
-            Create NFT
-          </Button>
-        </Form.Item>
+        <Button
+          type="primary"
+          htmlType="submit"
+          style={{ width: "100%", backgroundColor: "#1890ff" }}
+        >
+          Create NFT
+        </Button>
       </Form>
-      {/* End of Form */}
     </div>
   );
 };
