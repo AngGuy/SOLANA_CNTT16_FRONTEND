@@ -89,7 +89,7 @@ export const fetchNFTs = async ({
 
 // Fetch danh sách Assets
 export const fetchAssets = async () => {
-  const url = `http://localhost:5000/api/nfts/get-all-nft`;
+  const url = `${API_BASE_URL}/nfts/get-all-nft`;
   return fetchAPI(url, { method: "GET" });
 };
 
