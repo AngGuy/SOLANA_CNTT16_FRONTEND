@@ -4,7 +4,7 @@ import { Card } from "antd";
 const HomePage: React.FC = () => {
   return (
     <div>
-      <h1>Welcome to the NFT Marketplace</h1>
+      <h1>Welcome to the NFT Marketplace Vip Vip</h1>
       <Card style={{ marginTop: 20, padding: 20 }}>
         <p>
           Discover, create, and trade unique digital assets with our NFT

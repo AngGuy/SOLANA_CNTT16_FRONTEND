@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Input, Button, Form, message } from "antd";
 import { registerUser } from "../services/apiService"; // Ensure this path is correct
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const [email, setEmail] = useState<string>("");
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   // Handle form submission
   const handleRegister = async (values: { email: string }) => {
@@ -26,6 +28,7 @@ const LoginPage = () => {
       const data = await registerUser(details);
       console.log("User registered successfully:", data);
       message.success("User registered successfully!");
+      navigate("/assets");
     } catch (error: any) {
       console.error("Error registering user:", error.message);
       message.error(error.message || "An error occurred while registering.");

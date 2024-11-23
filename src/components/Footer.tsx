@@ -8,7 +8,7 @@ const Footer = () => {
     <AntFooter
       style={{ textAlign: "center", background: "#001529", color: "white" }}
     >
-      NFT Marketplace ©2024 Created by Tadin Luan
+      NFT Marketplace ©2024 Created by Quy and Tuan
     </AntFooter>
   );
 };
