@@ -7,11 +7,13 @@ const { Header: AntHeader } = Layout;
 
 const Header = () => {
   const navigate = useNavigate();
-
+  const [walletAddress, setWalletAddress] = useState<string | null>();
+  const [error, setError] = useState<string | null>();
   const handleLogout = () => {
-    // Logic đăng xuất, có thể là xóa token hoặc session
-    localStorage.removeItem("userToken");
-    navigate("/login");
+    setWalletAddress(null);
+    localStorage.removeItem("walletAddress");
+    setError(null);
+    navigate("/connect");
   };
 
   const userMenu = (

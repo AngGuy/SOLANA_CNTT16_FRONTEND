@@ -99,9 +99,28 @@ export const getAllNFTs = async () => {
   }
 };
 
-// API: Lấy NFT theo itemId
 export const getNFTById = async (itemId: string) => {
-  return axiosAPI(`/get-item/${itemId}`);
+  // API của bạn
+  try {
+    const apiUrl = `http://localhost:5000/api/nfts/get-item/${itemId}`;
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch NFT details");
+    }
+
+    const data = await response.json();
+    console.log("API response data:", data); // In kết quả trả về từ API
+    return data.data; // Kiểm tra nếu cần thay đổi thuộc tính trả về của data
+  } catch (error) {
+    console.error("Error fetching NFT details:", error);
+    throw error;
+  }
 };
 
 // API: Lấy danh sách NFT của người dùng

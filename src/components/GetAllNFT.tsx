@@ -31,8 +31,7 @@ const GetAllNFTs: React.FC = () => {
   }, []);
 
   const handleNFTClick = (nft: NFTItem) => {
-    // Điều hướng đến trang chi tiết NFT
-    navigate("/nft-detail", { state: nft }); // Truyền thông tin NFT qua state
+    navigate(`/nft-detail/${nft.id}`);
   };
 
   return (

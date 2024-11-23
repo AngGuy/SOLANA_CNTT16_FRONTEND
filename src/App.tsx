@@ -42,12 +42,7 @@ const App: React.FC = () => {
                 isAuthenticated ? <GetAllNFTs /> : <Navigate to="/login" />
               }
             />
-            <Route
-              path="/nft-detail"
-              element={
-                isAuthenticated ? <NFTDetail /> : <Navigate to="/login" />
-              }
-            />
+            <Route path="/nft-detail/:idNFT" element={<NFTDetail />} />
             <Route
               path="/create-nft"
               element={

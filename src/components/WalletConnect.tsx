@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Sử dụng để điều hướng
 
 const WalletConnect = () => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [isPhantomInstalled, setIsPhantomInstalled] = useState<boolean>(false);
-  const [walletData, setWalletData] = useState<any>(null); // Lưu trữ dữ liệu ví từ API
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [isRegistered, setIsRegistered] = useState<boolean>(false); // Kiểm tra nếu tài khoản đã đăng ký
+  const navigate = useNavigate(); // Hook điều hướng
 
   // Kết nối với Phantom Wallet
   const connectWallet = async () => {
@@ -20,7 +20,7 @@ const WalletConnect = () => {
         // Lưu địa chỉ ví vào localStorage
         localStorage.setItem("walletAddress", walletAddress);
 
-        // Kiểm tra tài khoản đã đăng ký hay chưa
+        // Gọi API kiểm tra tài khoản đã đăng ký hay chưa
         checkIfWalletRegistered(walletAddress);
       } else {
         alert(
@@ -32,18 +32,48 @@ const WalletConnect = () => {
     }
   };
 
-  // Ngắt kết nối
-  const disconnectWallet = () => {
-    setWalletAddress(null);
-    setWalletData(null); // Reset dữ liệu ví khi ngắt kết nối
-    setIsRegistered(false); // Reset trạng thái đăng ký
-    console.log("Disconnected from Phantom Wallet");
+  // Kiểm tra tài khoản đã đăng ký hay chưa
+  const checkIfWalletRegistered = async (walletAddress: string) => {
+    setLoading(true);
+    setError(null);
 
-    // Xóa địa chỉ ví khỏi localStorage
-    localStorage.removeItem("walletAddress");
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/users/check-email/${walletAddress}`,
+        {
+          method: "POST", // Đặt phương thức là POST
+          headers: {
+            "Content-Type": "application/json", // Đảm bảo gửi đúng kiểu dữ liệu
+          },
+          body: JSON.stringify({ walletAddress }), // Gửi địa chỉ ví trong phần body
+        }
+      );
+
+      const data = await response.json();
+      console.log(data);
+
+      if (response.ok) {
+        // Kiểm tra nếu có email
+        if (data.email) {
+          alert("Wallet connected successfully!"); // Thông báo thành công
+        } else {
+          throw new Error("Wallet is not registered.");
+        }
+      } else {
+        throw new Error(data.error || "Failed to check wallet registration.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message);
+      // Nếu chưa đăng ký, điều hướng đến trang đăng ký
+      alert("Wallet not registered. Redirecting to registration page.");
+      navigate("/login");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Kiểm tra xem Phantom Wallet có được cài đặt hay không
+  // Kiểm tra nếu Phantom Wallet đã được cài đặt
   const checkIfWalletIsInstalled = () => {
     if (window.solana && window.solana.isPhantom) {
       console.log("Phantom Wallet is installed!");
@@ -56,33 +86,6 @@ const WalletConnect = () => {
     }
   };
 
-  // Kiểm tra tài khoản đã đăng ký hay chưa
-  const checkIfWalletRegistered = async (walletAddress: string) => {
-    setLoading(true);
-    setError(null); // Reset error
-
-    try {
-      const response = await fetch(`/api/check-wallet/${walletAddress}`); // API backend kiểm tra đăng ký ví
-      const data = await response.json();
-
-      if (response.ok) {
-        if (data.isRegistered) {
-          setIsRegistered(true); // Tài khoản đã đăng ký
-          setWalletData(data.walletData); // Lưu dữ liệu ví nếu đã đăng ký
-        } else {
-          disconnectWallet();
-          setError("This wallet is not registered. Please register first.");
-        }
-      } else {
-        setError("Failed to check wallet registration.");
-      }
-    } catch (err) {
-      setError("An error occurred while checking wallet registration.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Tải trạng thái từ localStorage khi component được render
   useEffect(() => {
     checkIfWalletIsInstalled();
@@ -90,10 +93,6 @@ const WalletConnect = () => {
     // Kiểm tra nếu đã có địa chỉ ví trong localStorage
     const savedWalletAddress = localStorage.getItem("walletAddress");
     if (savedWalletAddress) {
-      console.log(
-        "Wallet address loaded from localStorage:",
-        savedWalletAddress
-      );
       setWalletAddress(savedWalletAddress);
 
       // Gọi API để kiểm tra xem ví đã đăng ký chưa
@@ -109,18 +108,12 @@ const WalletConnect = () => {
           <p>Connected Wallet: {walletAddress}</p>
           {loading && <p>Loading wallet data...</p>}
           {error && <p style={{ color: "red" }}>{error}</p>}
-
-          {/* Hiển thị thông tin ví nếu có dữ liệu */}
-          {isRegistered && walletData && (
-            <div>
-              <p>
-                <strong>User Info:</strong> {JSON.stringify(walletData)}
-              </p>
-            </div>
-          )}
-
           <button
-            onClick={disconnectWallet}
+            onClick={() => {
+              setWalletAddress(null);
+              localStorage.removeItem("walletAddress");
+              setError(null); // Xóa lỗi nếu có
+            }}
             style={{ padding: "10px", cursor: "pointer" }}
           >
             Disconnect Wallet

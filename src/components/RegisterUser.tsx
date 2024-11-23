@@ -1,13 +1,14 @@
 import React, { useState, FormEvent } from "react";
 import { Input, Button, Form, message } from "antd";
 import { registerUser } from "../services/apiService"; // Ensure this path is correct
+import { useNavigate } from "react-router-dom";
 
 const RegisterUser = () => {
   const [referenceId, setReferenceId] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [externalWalletAddress, setExternalWalletAddress] =
     useState<string>("");
-
+  const navigate = useNavigate();
   // Handle form submission
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
@@ -25,6 +26,7 @@ const RegisterUser = () => {
       const data = await registerUser(userData);
       console.log("User registered successfully:", data);
       message.success("User registered successfully!");
+      navigate("/");
     } catch (error: any) {
       console.error("Error registering user:", error.message);
       message.error(error.message || "An error occurred while registering.");

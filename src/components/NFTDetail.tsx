@@ -1,33 +1,66 @@
 import React, { useEffect, useState } from "react";
 import { Card, message, Spin, Button, Form } from "antd";
-import { useLocation, useNavigate } from "react-router-dom";
-import { buyNFT } from "../services/apiService";
-
-interface NFTDetailProps {
-  name: string;
-  description: string;
-  imageUrl: string;
-  idNFT: string;
-}
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { getNFTById, buyNFT } from "../services/apiService";
 
 const NFTDetail: React.FC = () => {
-  const [form] = Form.useForm();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { idNFT } = useParams(); // Lấy idNFT từ URL
+  const [nftData, setNftData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const { name, description, imageUrl, idNFT }: Partial<NFTDetailProps> =
-    location.state || {}; // Đảm bảo `Partial` để tránh lỗi khi dữ liệu không đầy đủ.
-
-  // Điều hướng nếu thiếu dữ liệu cần thiết
   useEffect(() => {
-    if (!location.state || !idNFT) {
-      message.error("NFT data is missing. Redirecting...");
-      navigate("/");
+    if (!idNFT) {
+      message.error("NFT ID is missing. Redirecting...");
+      navigate("/assets");
+      return;
     }
-  }, [location.state, idNFT, navigate]);
 
-  // Lấy địa chỉ ví từ localStorage
+    const fetchNFTDetail = async () => {
+      try {
+        // Lấy itemId từ params hoặc từ URL
+        const apiUrl = `http://localhost:5000/api/nfts/get-item/${idNFT}`; // idNFT lấy từ useParams hoặc location.state
+
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch NFT details");
+        }
+
+        const data = await response.json();
+        console.log("API response data:", data); // In kết quả trả về từ API
+
+        if (data && data.item) {
+          const nft = data.item;
+          const nftDetails = {
+            id: nft.id,
+            name: nft.name,
+            description: nft.description,
+            imageUrl: nft.imageUrl,
+          };
+          setNftData(nftDetails); // Cập nhật dữ liệu NFT vào state
+        } else {
+          message.error("Invalid NFT data format.");
+        }
+
+        setLoading(false); // Đặt loading thành false khi hoàn thành
+      } catch (error) {
+        console.error("Error fetching NFT details:", error);
+        message.error("Failed to fetch NFT details.");
+        setLoading(false); // Đặt loading thành false khi có lỗi
+      }
+    };
+
+    fetchNFTDetail();
+  }, [idNFT, navigate]);
+
+  // Kiểm tra ví người dùng
   useEffect(() => {
     const savedWalletAddress = localStorage.getItem("walletAddress");
     if (savedWalletAddress) {
@@ -57,14 +90,11 @@ const NFTDetail: React.FC = () => {
 
     try {
       const response = await buyNFT(payload);
-      console.log("API Response:", response);
-
       if (response.consentUrl) {
         message.success("NFT listed for sale successfully!");
         window.open(response.consentUrl, "_blank");
-
         setTimeout(() => {
-          navigate("/");
+          navigate("/assets");
         }, 3000);
       } else {
         message.error("Consent URL not found in response.");
@@ -77,19 +107,12 @@ const NFTDetail: React.FC = () => {
     }
   };
 
-  if (!name || !description || !imageUrl || !idNFT) {
-    return (
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <Spin tip="Loading NFT details..." />
-        <p>
-          If loading takes too long, please try refreshing the page or{" "}
-          <Button type="link" onClick={() => navigate("/")}>
-            return to the homepage
-          </Button>
-          .
-        </p>
-      </div>
-    );
+  if (loading) {
+    return <Spin tip="Loading NFT details..." />;
+  }
+
+  if (!nftData) {
+    return <p>Could not load NFT details.</p>;
   }
 
   return (
@@ -103,21 +126,21 @@ const NFTDetail: React.FC = () => {
       }}
     >
       <div style={{ width: "100%", maxWidth: "600px" }}>
-        <h1 style={{ textAlign: "center" }}>{name}</h1>
+        <h1 style={{ textAlign: "center" }}>{nftData.name}</h1>
         <Card
           cover={
             <img
-              alt={name}
-              src={imageUrl}
+              alt={nftData.name}
+              src={nftData.imageUrl}
               style={{ width: "100%", height: "300px", objectFit: "cover" }}
             />
           }
         >
           <p>
-            <strong>Description:</strong> {description}
+            <strong>Description:</strong> {nftData.description}
           </p>
 
-          <Form form={form} layout="vertical">
+          <Form layout="vertical">
             <Button
               type="primary"
               onClick={handleSubmit}
