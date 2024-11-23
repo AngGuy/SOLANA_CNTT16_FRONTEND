@@ -41,7 +41,7 @@ const Header = () => {
         style={{ color: "white", fontSize: "20px", fontWeight: "bold" }}
       >
         <Link to="/" style={{ color: "inherit", textDecoration: "none" }}>
-          NFT Marketplace
+          NFT Marketplace Vip Vip
         </Link>
       </div>
       <Menu theme="dark" mode="horizontal">

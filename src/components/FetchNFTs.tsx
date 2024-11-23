@@ -1,5 +1,6 @@
 import React, { useState, FormEvent } from "react";
 import { fetchNFTs } from "../services/apiService";
+import { message } from "antd";
 
 interface NFT {
   id: string;
@@ -19,7 +20,7 @@ const FetchNFTs = () => {
       setNfts(data); // Cập nhật danh sách NFTs vào state
     } catch (error) {
       console.error(error);
-      alert("Error fetching NFTs."); // Thông báo lỗi nếu có
+      message.success("Error fetching NFTs."); // Thông báo lỗi nếu có
     }
   };
 
