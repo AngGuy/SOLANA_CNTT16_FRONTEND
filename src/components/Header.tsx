@@ -51,6 +51,9 @@ const Header = () => {
         <Menu.Item key="connect">
           <Link to="/connect">Connect Phantom</Link>
         </Menu.Item>
+        <Menu.Item key="allNFTForSale">
+          <Link to="/allNFTForSale">Marketplace</Link>
+        </Menu.Item>
         <Menu.Item key="assets">
           <Link to="/assets">All NFTs</Link>
         </Menu.Item>

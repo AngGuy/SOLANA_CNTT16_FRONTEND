@@ -99,6 +99,28 @@ export const getAllNFTs = async () => {
   }
 };
 
+export const getAllNFTForSale = async () => {
+  const apiUrl = "http://localhost:5000/api/nfts/get-all-nft-sale"; // API của bạn
+  try {
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch NFTs");
+    }
+
+    const data = await response.json();
+    return data.data.map((item: any) => item.item); // Trích xuất 'item' từ 'data'
+  } catch (error) {
+    console.error("Error fetching NFTs:", error);
+    throw error;
+  }
+};
+
 export const getNFTById = async (itemId: string) => {
   // API của bạn
   try {

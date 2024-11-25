@@ -17,6 +17,7 @@ import WalletConnect from "./components/WalletConnect";
 import ListNFTForSale from "./components/ListNFTForSale";
 import GetAllNFTs from "./components/GetAllNFT";
 import NFTDetail from "./components/NFTDetail";
+import GetAllNFTForSale from "./components/GetAllNFTForSale";
 
 const App: React.FC = () => {
   const isAuthenticated = !!localStorage.getItem("walletAddress"); // Kiểm tra trạng thái đăng nhập
@@ -36,6 +37,7 @@ const App: React.FC = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/connect" element={<WalletConnect />} />
             {/* Các trang yêu cầu đăng nhập */}
+            <Route path="/allNFTForSale" element={<GetAllNFTForSale />} />
             <Route
               path="/assets"
               element={
