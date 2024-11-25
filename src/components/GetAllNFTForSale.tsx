@@ -8,6 +8,7 @@ interface NFTItem {
   imageUrl: string;
   name: string;
   description: string;
+  priceCents?: number | null;
 }
 
 const GetAllNFTForSale: React.FC = () => {
@@ -68,6 +69,12 @@ const GetAllNFTForSale: React.FC = () => {
                 </p>
                 <p>
                   <strong>Description:</strong> {item.description}
+                </p>
+                <p>
+                  <strong>Price:</strong>{" "}
+                  {item.priceCents
+                    ? `$${(item.priceCents / 100).toFixed(2)}`
+                    : "Not for Sale"}
                 </p>
               </Card>
             </List.Item>
