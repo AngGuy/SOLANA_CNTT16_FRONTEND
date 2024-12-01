@@ -74,6 +74,47 @@ export const listAssetForSale = async (data: {
   return await response.json();
 };
 
+//hủy bán NFT
+export const cancelAssetListing = async (IdNFT: string) => {
+  const url = `http://localhost:5000/api/nfts/cancelNFT`;
+
+  const body = JSON.stringify({ IdNFT });
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json", // Đảm bảo yêu cầu JSON
+      },
+      body,
+    });
+
+    const responseText = await response.text(); // Đọc toàn bộ phản hồi
+
+    if (!response.ok) {
+      // Nếu phản hồi không thành công
+      console.error("Failed to cancel listing:", response.status, responseText);
+
+      // Thử parse JSON lỗi chi tiết (nếu có)
+      let errorDetail;
+      try {
+        errorDetail = JSON.parse(responseText);
+      } catch {
+        errorDetail = { message: responseText };
+      }
+
+      throw new Error(errorDetail.error || "Failed to cancel asset listing.");
+    }
+
+    // Nếu phản hồi thành công
+    return JSON.parse(responseText);
+  } catch (error: any) {
+    console.error("Error while canceling asset listing:", error.message);
+    throw new Error(error.message || "Something went wrong.");
+  }
+};
+
 // API: Mua NFT
 
 // API: Lấy tất cả NFTs

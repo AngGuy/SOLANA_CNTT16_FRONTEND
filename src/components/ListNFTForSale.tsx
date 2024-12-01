@@ -33,7 +33,7 @@ const ListNFTForSale: React.FC = () => {
         window.open(response.consentUrl, "_blank");
 
         setTimeout(() => {
-          navigate("/"); // Navigate to the home page
+          navigate("/assets"); // Navigate to the home page
         }, 3000);
       } else {
         message.error("Consent URL not found in response.");

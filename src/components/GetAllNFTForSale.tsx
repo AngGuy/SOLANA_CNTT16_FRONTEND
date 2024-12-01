@@ -75,6 +75,7 @@ const GetAllNFTForSale: React.FC = () => {
                   {item.priceCents
                     ? `$${(item.priceCents / 100).toFixed(2)}`
                     : "Not for Sale"}
+                  -USDC
                 </p>
               </Card>
             </List.Item>
